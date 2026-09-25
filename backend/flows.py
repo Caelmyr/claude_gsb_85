@@ -17,7 +17,8 @@ from backend import config
 from backend.storage import atomic_write_json, read_json
 from backend.engine.rule_parser import compile_condition, compile_condition_cached, RuleValidationError
 
-ACTION_RANK = {"reject": 1, "review": 3, "alert": 2, "pass": 0}
+# 动作优先级与风控引擎共用同一份定义（reject > review > alert > pass）
+ACTION_RANK = config.ACTION_RANK
 
 
 def _scale_score(raw):
@@ -116,8 +117,6 @@ class CompiledFlow:
                 atype = "pass"
             if ACTION_RANK.get(atype, 0) >= ACTION_RANK.get(action, 0):
                 action = atype
-        if action == "reject":
-            action = "review"
         return {
             "flow_id": self.id,
             "flow_name": self.name,

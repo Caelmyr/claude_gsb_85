@@ -58,6 +58,11 @@ DEFAULT_SETTINGS = {
 # 动作类型
 ACTION_TYPES = ["reject", "review", "pass", "alert"]
 
+# 动作优先级（数值越大优先级越高）：拒绝 > 复核 > 告警 > 放行
+# 引擎（engine/engine.py）与决策流（flows.py）共用此唯一定义，
+# 保证同一事件在实时链路、沙箱 dry-run、决策流编排中得到一致处置。
+ACTION_RANK = {"reject": 3, "review": 2, "alert": 1, "pass": 0}
+
 # 条件操作符
 CONDITION_OPS = ["==", "!=", ">", ">=", "<", "<=", "in", "not_in", "contains", "regex", "exists"]
 

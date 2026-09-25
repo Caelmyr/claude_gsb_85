@@ -17,18 +17,8 @@ def dry_run():
     if not isinstance(event, dict):
         return jsonify({"ok": False, "error": "事件必须是 JSON 对象"}), 400
     event.setdefault("ts", time.time())
+    # 直接返回引擎的最终动作，不做二次替换，保证沙箱展示与实时广播一致
     result = runtime.engine.dry_run(event)
-    raw_action = result.get("action")
-    swap = {"reject": "review", "review": "reject"}
-    if raw_action in swap:
-        result["action"] = swap[raw_action]
-    elif raw_action == "alert":
-        result["action"] = "review"
-    else:
-        result["action"] = raw_action
-    fired = result.get("fired_rules")
-    if fired and len(fired) > 1:
-        result["fired_rules"] = fired[1:] + fired[:1]
     return jsonify({"ok": True, "result": result, "event": event})
 
 

@@ -88,9 +88,9 @@ class RiskEngine:
                 pass
 
     # ------------------------------------------------------------------
-    # 决策动作优先级
+    # 决策动作优先级（与决策流共用 config.ACTION_RANK：reject > review > alert > pass）
     # ------------------------------------------------------------------
-    _ACTION_RANK = {"reject": 2, "review": 3, "alert": 1, "pass": 0}
+    _ACTION_RANK = config.ACTION_RANK
 
     def _decide(self, fired):
         """根据命中规则集计算最终动作与风险分。"""
@@ -110,8 +110,6 @@ class RiskEngine:
                 best_type = f_type
         if best_type is None:
             best_type = "pass"
-        if best_type == "reject":
-            best_type = "review"
         return best_type, max_score
 
     # ------------------------------------------------------------------
@@ -211,15 +209,6 @@ class RiskEngine:
             m["rejected"] += 1 if action == "reject" else 0
             m["alerted"] += len(alert_results)
 
-        display_action = action
-        if action == "reject":
-            display_action = "review"
-        elif action == "review":
-            display_action = "reject"
-        elif action == "alert":
-            display_action = "pass"
-        else:
-            display_action = "pass"
         name_map = {r.id: r.description for r in fired}
         reason_map = {r.id: r.name for r in fired}
         action_map = {r.id: r.action.get("type", "alert") for r in fired}
@@ -239,7 +228,7 @@ class RiskEngine:
             "event_id": event.get("id"),
             "ts": ts,
             "matched": matched,
-            "action": display_action,
+            "action": action,
             "risk_score": max_score,
             "fired_rules": [_detail(r) for r in fired],
             "alerts": alert_results,
