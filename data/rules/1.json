@@ -1,0 +1,37 @@
+{
+  "rule": {
+    "id": "1",
+    "name": "示例规则",
+    "description": "规则说明",
+    "enabled": true,
+    "priority": 100,
+    "conditions": [
+      {
+        "field": "flase",
+        "op": "==",
+        "value": "login"
+      },
+      {
+        "agg": {
+          "window_sec": 60,
+          "key_field": "ip",
+          "op": ">=",
+          "threshold": 5,
+          "agg_type": "count"
+        }
+      }
+    ],
+    "action": {
+      "type": "reject",
+      "risk_score": 90,
+      "reason": "登录频率过高",
+      "level": "高"
+    },
+    "tags": [
+      "高频",
+      "登录"
+    ],
+    "version": 1,
+    "updated_at": 1790342520
+  }
+}
